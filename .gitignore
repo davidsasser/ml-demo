@@ -2,6 +2,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ML models
+*.sav
+*.joblib
+*.pkl
+
 # C extensions
 *.so
 
