@@ -9,7 +9,7 @@
       currY = 0,
       dot_flag = false;
 
-  var x = "black",
+  var x = "white",
       y = 2;
   
   function init() {
@@ -17,6 +17,8 @@
       ctx = canvas.getContext("2d");
       w = canvas.width;
       h = canvas.height;
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
   
       canvas.addEventListener("mousemove", function (e) {
           findxy('move', e)
@@ -56,7 +58,7 @@
               x = "white";
               break;
       }
-      if (x == "white") y = 14;
+      if (x == "white") y = 4;
       else y = 2;
   
   }
@@ -87,6 +89,9 @@
         url: "/numbers/predict",
         data: { 
           imgBase64: dataURL
+        },
+        success: function(resp) {
+            alert("resp: " + resp.prediction)
         }
       }).done(function(o) {
         console.log('saved'); 
@@ -137,14 +142,14 @@
   <body onload="init()">
     <h1>Draw a number:</h1>
 <form method="post">{% csrf_token %}
-    <canvas id="can" width="64" height="64" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
+    <canvas id="can" width="112" height="112" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
         <div style="position:absolute;top:12%;left:43%;">Choose Color</div>
         
         
         <input type="button" value="save" id="btn" size="30" onclick="save()" style="position:absolute;top:55%;left:10%;">
       </form>
 
-      <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+      <img id="canvasimg" style="position:absolute;top:10%;left:52%;background-color:black" style="display:none;">
       <label>Prediction:</label>
       <p>{{ prediction }}</p>
 

@@ -1,10 +1,15 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from joblib import load
 import numpy as np
 import os
 import base64
+import tensorflow as tf
+import cv2
+import json
 
-
+dirname = os.path.dirname(__file__)
+model = tf.keras.models.load_model(os.path.join(dirname, './'))
 
 def index(request):
 
@@ -12,21 +17,13 @@ def index(request):
 
 def predict(request):
     if request.method == 'POST':
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, '../numbers_model.joblib')
-        model = load(filename)
-        x_val = [   
-                    [ 0.,  0.,  3., 10., 15.,  8.,  0.,  0.],  
-                    [ 0.,  0., 12., 14.,  8.,  1.,  0.,  0.],  
-                    [ 0.,  1., 16.,  3.,  0.,  0.,  0.,  0.],  
-                    [ 0.,  2., 16.,  9., 11., 16.,  3.,  0.], 
-                    [ 0.,  4., 16., 14.,  9., 15.,  7.,  0.], 
-                    [ 0.,  1.,  4.,  0.,  0., 15.,  3.,  0.],  
-                    [ 0.,  0.,  0.,  3., 12.,  8.,  0.,  0.],  
-                    [ 0.,  0.,  2., 10.,  8.,  0.,  0.,  0.]
-                ]
-        x = np.asarray(x_val)
-        prediction = model.predict(x.reshape(1, -1))
+        
+
+
+        
+        
+
+        
 
         base64str = request.POST.get("imgBase64", None).split(',')[1]
         # print(base64str)
@@ -34,6 +31,16 @@ def predict(request):
         filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
         with open(filename, 'wb') as f:
             f.write(imgdata)
+
+        img = cv2.imread(os.path.join(dirname, '../some_image.jpg'), 0)
+        print(img.shape)
+        #res = cv2.resize(img, dsize=(28, 28), interpolation=cv2.INTER_CUBIC)
+        res = tf.image.resize(img, [28,28])
+
+        pred = model.predict(res.reshape(1,28,28,1))
+        prediction = pred.argmax()
+        print(prediction)
+        return HttpResponse(json.dumps({'prediction' : str(prediction)}), content_type="application/json")
 
     # if a GET (or any other method) we'll create a blank form
     else:
