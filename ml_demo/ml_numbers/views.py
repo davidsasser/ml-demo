@@ -17,13 +17,6 @@ def index(request):
 
 def predict(request):
     if request.method == 'POST':
-        
-
-
-        
-        
-
-        
 
         base64str = request.POST.get("imgBase64", None).split(',')[1]
         # print(base64str)
@@ -33,14 +26,25 @@ def predict(request):
             f.write(imgdata)
 
         img = cv2.imread(os.path.join(dirname, '../some_image.jpg'), 0)
-        print(img.shape)
-        #res = cv2.resize(img, dsize=(28, 28), interpolation=cv2.INTER_CUBIC)
-        res = tf.image.resize(img, [28,28])
+        res = cv2.resize(img, dsize=(28, 28), interpolation=cv2.INTER_CUBIC)
+        #res = tf.image.resize(img, [28,28])
+
+        res = res.reshape(28, 28, 1)
+
+        # Making sure that the values are float so that we can get decimal points after division
+        res = res.astype('float32')
+
+        res /= 255
 
         pred = model.predict(res.reshape(1,28,28,1))
+        my_dict = {}
+        count = 0
+        for i in pred:
+            for j in i:
+                my_dict[count] = (j*100)
+                count += 1
         prediction = pred.argmax()
-        print(prediction)
-        return HttpResponse(json.dumps({'prediction' : str(prediction)}), content_type="application/json")
+        return HttpResponse(json.dumps({'prediction' : str(prediction), 'confidence': my_dict}), content_type="application/json")
 
     # if a GET (or any other method) we'll create a blank form
     else:

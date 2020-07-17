@@ -1,29 +1,35 @@
-# Import datasets, classifiers and performance metrics
-from sklearn import datasets, svm, metrics
-from sklearn.model_selection import train_test_split
-from joblib import dump
+import tensorflow as tf
+import numpy as np
 
-# The digits dataset
-digits = datasets.load_digits()
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
 
-# To apply a classifier on this data, we need to flatten the image, to
-# turn the data in a (samples, feature) matrix:
-n_samples = len(digits.images)
-data = digits.images.reshape((n_samples, -1))
 
-# # Create a classifier: a support vector classifier
-# model = svm.SVC(gamma=0.001)
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
+x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
+input_shape = (28, 28, 1)
+# Making sure that the values are float so that we can get decimal points after division
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+# Normalizing the RGB codes by dividing it to the max RGB value.
+x_train /= 255
+x_test /= 255
+print(x_test[0])
+# Creating a Sequential Model and adding the layers
+# model = Sequential()
+# model.add(Conv2D(28, kernel_size=(3,3), input_shape=input_shape))
+# model.add(MaxPooling2D(pool_size=(2, 2)))
+# model.add(Flatten()) # Flattening the 2D arrays for fully connected layers
+# model.add(Dense(128, activation=tf.nn.relu))
+# model.add(Dropout(0.2))
+# model.add(Dense(10,activation=tf.nn.softmax))
 
-# # Split data into train and test subsets
-X_train, X_test, y_train, y_test = train_test_split(data, digits.target, test_size=0.2, random_state=222)
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=222)
+# model.compile(optimizer='adam', 
+#               loss='sparse_categorical_crossentropy', 
+#               metrics=['accuracy'])
 
-# # We learn the digits on the first half of the digits
-# model.fit(X_train, y_train)
+# model.fit(x=x_train,y=y_train, epochs=10)
 
-# # Now predict the value of the digit on the second half:
-# print(model.score(X_val, y_val))
-print(X_val[0])
-print(y_val[0])
-
-# dump(model, 'numbers_model.joblib') 
+# #pred = model.predict(x_test[0].reshape(1,28,28,1))
+# model.save('./ml_numbers')
