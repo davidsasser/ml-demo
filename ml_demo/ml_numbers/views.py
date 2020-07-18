@@ -26,7 +26,7 @@ def predict(request):
             f.write(imgdata)
 
         img = cv2.imread(os.path.join(dirname, '../some_image.jpg'), 0)
-        res = cv2.resize(img, dsize=(28, 28), interpolation=cv2.INTER_CUBIC)
+        res = cv2.resize(img, dsize=(28, 28), interpolation=cv2.INTER_LANCZOS4)
         #res = tf.image.resize(img, [28,28])
 
         res = res.reshape(28, 28, 1)
